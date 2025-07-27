@@ -47,7 +47,6 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
   useEffect(() => {
     const savedChats = localStorage.getItem('nelsongpt-chats');
     const savedSettings = localStorage.getItem('nelsongpt-settings');
-    const savedCurrentChatId = localStorage.getItem('nelsongpt-current-chat');
 
     if (savedChats) {
       const parsedChats = JSON.parse(savedChats).map((chat: any) => ({
@@ -66,9 +65,8 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
       setSettings({ ...defaultSettings, ...JSON.parse(savedSettings) });
     }
 
-    if (savedCurrentChatId) {
-      setCurrentChatId(savedCurrentChatId);
-    }
+    // Don't auto-load previous chat - always start with welcome screen
+    // Users can manually select a chat from the sidebar if needed
   }, []);
 
   // Save data to localStorage
@@ -80,18 +78,14 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
     localStorage.setItem('nelsongpt-settings', JSON.stringify(settings));
   }, [settings]);
 
-  useEffect(() => {
-    if (currentChatId) {
-      localStorage.setItem('nelsongpt-current-chat', currentChatId);
-    }
-  }, [currentChatId]);
+  // Don't persist current chat ID - always start fresh
 
   // Create new chat
   const createNewChat = () => {
     const newChatId = uuidv4();
     const newChat: Chat = {
       id: newChatId,
-      title: 'New Medical Consultation',
+      title: 'New Chat',
       messages: [],
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -121,6 +115,14 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
     }
   };
 
+  // Clear all chats
+  const clearAllChats = () => {
+    setChats([]);
+    setCurrentChatId(null);
+    localStorage.removeItem('nelsongpt-chats');
+    localStorage.removeItem('nelsongpt-current-chat');
+  };
+
   // Update settings
   const updateSettings = (newSettings: Partial<UserSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
@@ -131,9 +133,9 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
     const keywords = firstMessage.toLowerCase();
     
     if (keywords.includes('dosage') || keywords.includes('dose')) {
-      return 'Drug Dosage Consultation';
+      return 'Drug Dosage';
     } else if (keywords.includes('emergency') || keywords.includes('urgent')) {
-      return 'Emergency Medical Consultation';
+      return 'Emergency Protocol';
     } else if (keywords.includes('symptom')) {
       return 'Symptom Analysis';
     } else if (keywords.includes('growth') || keywords.includes('development')) {
@@ -327,6 +329,7 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
           onNewChat={createNewChat}
           onSelectChat={selectChat}
           onDeleteChat={deleteChat}
+          onClearAllChats={clearAllChats}
           onUpdateSettings={updateSettings}
         />
       </div>
@@ -345,17 +348,17 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
               <Menu size={20} />
             </Button>
             
-            <div className="flex items-center gap-2">
-              <Stethoscope size={20} className="text-primary" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <Stethoscope size={24} className="text-primary" />
+              </div>
               <div>
-                <h2 className="font-semibold">
+                <h2 className="font-semibold text-lg">
                   {hasCurrentChat ? currentChat.title : 'NelsonGPT'}
                 </h2>
-                {hasCurrentChat && (
-                  <p className="text-xs text-muted-foreground">
-                    Evidence-based pediatric medical assistant
-                  </p>
-                )}
+                <p className="text-sm text-muted-foreground">
+                  Pediatric Assistant
+                </p>
               </div>
             </div>
           </div>
@@ -378,16 +381,16 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
           {!hasCurrentChat ? (
             // Welcome screen
             <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
-                <Stethoscope size={32} className="text-primary" />
+              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                <Stethoscope size={40} className="text-primary" />
               </div>
               <h1 className="text-2xl font-bold mb-2">Welcome to NelsonGPT</h1>
               <p className="text-muted-foreground mb-8 max-w-md">
-                Your evidence-based pediatric medical assistant powered by the Nelson Textbook of Pediatrics. 
+                Your pediatric assistant powered by the Nelson Textbook of Pediatrics. 
                 Start a conversation to get clinical guidance, dosage calculations, and medical references.
               </p>
               <Button onClick={createNewChat} size="lg">
-                Start New Consultation
+                Start New Chat
               </Button>
             </div>
           ) : (
