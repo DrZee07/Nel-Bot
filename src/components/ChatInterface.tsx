@@ -47,7 +47,6 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
   useEffect(() => {
     const savedChats = localStorage.getItem('nelsongpt-chats');
     const savedSettings = localStorage.getItem('nelsongpt-settings');
-    const savedCurrentChatId = localStorage.getItem('nelsongpt-current-chat');
 
     if (savedChats) {
       const parsedChats = JSON.parse(savedChats).map((chat: any) => ({
@@ -66,9 +65,8 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
       setSettings({ ...defaultSettings, ...JSON.parse(savedSettings) });
     }
 
-    if (savedCurrentChatId) {
-      setCurrentChatId(savedCurrentChatId);
-    }
+    // Don't auto-load previous chat - always start with welcome screen
+    // Users can manually select a chat from the sidebar if needed
   }, []);
 
   // Save data to localStorage
@@ -80,11 +78,7 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
     localStorage.setItem('nelsongpt-settings', JSON.stringify(settings));
   }, [settings]);
 
-  useEffect(() => {
-    if (currentChatId) {
-      localStorage.setItem('nelsongpt-current-chat', currentChatId);
-    }
-  }, [currentChatId]);
+  // Don't persist current chat ID - always start fresh
 
   // Create new chat
   const createNewChat = () => {
@@ -119,6 +113,14 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
       const remainingChats = chats.filter(chat => chat.id !== chatId);
       setCurrentChatId(remainingChats.length > 0 ? remainingChats[0].id : null);
     }
+  };
+
+  // Clear all chats
+  const clearAllChats = () => {
+    setChats([]);
+    setCurrentChatId(null);
+    localStorage.removeItem('nelsongpt-chats');
+    localStorage.removeItem('nelsongpt-current-chat');
   };
 
   // Update settings
@@ -327,6 +329,7 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
           onNewChat={createNewChat}
           onSelectChat={selectChat}
           onDeleteChat={deleteChat}
+          onClearAllChats={clearAllChats}
           onUpdateSettings={updateSettings}
         />
       </div>

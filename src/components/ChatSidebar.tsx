@@ -28,6 +28,7 @@ interface ChatSidebarProps {
   onNewChat: () => void;
   onSelectChat: (chatId: string) => void;
   onDeleteChat: (chatId: string) => void;
+  onClearAllChats: () => void;
   onUpdateSettings: (settings: Partial<UserSettings>) => void;
 }
 
@@ -40,6 +41,7 @@ export function ChatSidebar({
   onNewChat,
   onSelectChat,
   onDeleteChat,
+  onClearAllChats,
   onUpdateSettings
 }: ChatSidebarProps) {
   const [activeTab, setActiveTab] = React.useState<'chats' | 'settings' | 'about'>('chats');
@@ -154,7 +156,20 @@ export function ChatSidebar({
 
                 {/* Chat History */}
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">Recent Chats</h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium text-muted-foreground">Recent Chats</h3>
+                    {sortedChats.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-muted-foreground hover:text-destructive"
+                        onClick={onClearAllChats}
+                      >
+                        <Trash2 size={12} className="mr-1" />
+                        Clear All
+                      </Button>
+                    )}
+                  </div>
                   <div className="space-y-1">
                     {sortedChats.length === 0 ? (
                       <div className="text-sm text-muted-foreground text-center py-8">
