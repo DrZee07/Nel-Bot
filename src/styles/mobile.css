@@ -1,0 +1,349 @@
+/* Mobile-first responsive design for medical professionals */
+
+/* Touch-friendly button sizes */
+@media (max-width: 768px) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Larger tap targets for medical emergency scenarios */
+  .emergency-button {
+    min-height: 56px;
+    min-width: 56px;
+    font-size: 1.1rem;
+  }
+
+  /* Medical input fields optimized for mobile */
+  .medical-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 16px;
+    border-radius: 8px;
+  }
+
+  /* Chat interface mobile optimizations */
+  .chat-message {
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    max-width: 85%;
+  }
+
+  .chat-input {
+    padding: 12px 16px;
+    font-size: 16px;
+    border-radius: 24px;
+  }
+
+  /* Medical context panel mobile layout */
+  .medical-panel-mobile {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 50vh;
+    overflow-y: auto;
+    background: white;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 50;
+  }
+
+  /* Emergency mode mobile optimizations */
+  .emergency-mode-mobile {
+    padding: 16px;
+    font-size: 1.1rem;
+  }
+
+  .emergency-protocol-card {
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    border-left: 4px solid #ef4444;
+  }
+
+  /* Settings page mobile layout */
+  .settings-mobile {
+    padding: 16px;
+  }
+
+  .settings-section {
+    margin-bottom: 24px;
+    padding: 16px;
+    border-radius: 12px;
+    background: #f8fafc;
+  }
+
+  /* PWA install prompt mobile */
+  .pwa-prompt-mobile {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 60;
+  }
+
+  /* Dosage calculator mobile layout */
+  .dosage-calculator-mobile {
+    padding: 16px;
+  }
+
+  .dosage-input-group {
+    margin-bottom: 16px;
+  }
+
+  .dosage-result {
+    padding: 16px;
+    border-radius: 12px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    margin-top: 16px;
+  }
+
+  /* Medical data tables mobile */
+  .medical-table-mobile {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .medical-table-mobile th,
+  .medical-table-mobile td {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  /* Sidebar mobile behavior */
+  .sidebar-mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 40;
+  }
+
+  .sidebar-mobile.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 35;
+  }
+
+  /* Header mobile optimizations */
+  .header-mobile {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .header-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Status badges mobile */
+  .status-badge-mobile {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 12px;
+  }
+
+  /* Medical alerts mobile */
+  .medical-alert-mobile {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+
+  .medical-alert-critical {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+  }
+
+  .medical-alert-warning {
+    background: #fffbeb;
+    border: 1px solid #fed7aa;
+    color: #92400e;
+  }
+
+  .medical-alert-info {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .chat-container {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .medical-panel-landscape {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 320px;
+    max-width: 40vw;
+    overflow-y: auto;
+    background: white;
+    border-left: 1px solid #e2e8f0;
+    z-index: 50;
+  }
+
+  .emergency-mode-landscape {
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
+/* PWA-specific mobile styles */
+@media (display-mode: standalone) {
+  .pwa-header {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .pwa-content {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pwa-sidebar {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  /* Hide browser UI elements in standalone mode */
+  .browser-only {
+    display: none;
+  }
+}
+
+/* High contrast mode for accessibility */
+@media (prefers-contrast: high) {
+  .medical-input {
+    border: 2px solid #000;
+  }
+
+  .emergency-button {
+    border: 2px solid #000;
+    background: #fff;
+    color: #000;
+  }
+
+  .medical-alert-critical {
+    border: 2px solid #dc2626;
+    background: #fff;
+    color: #dc2626;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-mobile {
+    transition: none;
+  }
+
+  .chat-message {
+    animation: none;
+  }
+
+  .loading-spinner {
+    animation: none;
+  }
+}
+
+/* Dark mode mobile optimizations */
+@media (prefers-color-scheme: dark) {
+  .medical-panel-mobile {
+    background: #1f2937;
+    border-top: 1px solid #374151;
+  }
+
+  .settings-section {
+    background: #1f2937;
+    border: 1px solid #374151;
+  }
+
+  .dosage-result {
+    background: #064e3b;
+    border: 1px solid #047857;
+    color: #d1fae5;
+  }
+
+  .medical-alert-critical {
+    background: #7f1d1d;
+    border: 1px solid #dc2626;
+    color: #fecaca;
+  }
+
+  .medical-alert-warning {
+    background: #78350f;
+    border: 1px solid #d97706;
+    color: #fed7aa;
+  }
+
+  .medical-alert-info {
+    background: #1e3a8a;
+    border: 1px solid #3b82f6;
+    color: #bfdbfe;
+  }
+}
+
+/* Print styles for medical reports */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .medical-report {
+    font-size: 12pt;
+    line-height: 1.4;
+    color: #000;
+    background: #fff;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  .medical-header {
+    border-bottom: 2px solid #000;
+    padding-bottom: 10pt;
+    margin-bottom: 20pt;
+  }
+
+  .medical-section {
+    margin-bottom: 20pt;
+  }
+
+  .medical-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .medical-table th,
+  .medical-table td {
+    border: 1px solid #000;
+    padding: 8pt;
+    text-align: left;
+  }
+}
+

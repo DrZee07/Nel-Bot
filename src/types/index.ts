@@ -83,8 +83,8 @@ export interface PediatricReference {
 export interface UserSettings {
   showTimestamps: boolean;
   showCitations: boolean;
-  fontSize: 'small' | 'medium' | 'large';
-  theme: 'dark' | 'light';
+  fontSize: 'small' | 'medium' | 'large' | 'xl';
+  theme: 'dark' | 'light' | 'system';
   autoScroll: boolean;
   soundEnabled: boolean;
   compactMode?: boolean;
@@ -98,4 +98,59 @@ export interface AppState {
   medicalContext: MedicalContext;
   isLoading: boolean;
   sidebarOpen: boolean;
+}
+
+// New types for enhanced medical features
+export interface PatientInfo {
+  age?: string;
+  weight?: string;
+  height?: string;
+  gender?: 'male' | 'female' | 'other';
+  allergies: string[];
+  medications: string[];
+  conditions: string[];
+  vitals?: {
+    temperature?: string;
+    heartRate?: string;
+    bloodPressure?: string;
+    respiratoryRate?: string;
+  };
+}
+
+export interface EmergencyProtocolEnhanced {
+  id: string;
+  title: string;
+  category: 'cardiac' | 'respiratory' | 'neurological' | 'trauma' | 'poisoning' | 'allergic';
+  urgency: 'critical' | 'urgent' | 'semi-urgent';
+  steps: string[];
+  medications?: {
+    name: string;
+    dosage: string;
+    route: string;
+  }[];
+  vitals?: string[];
+}
+
+export interface DosageResult {
+  medication: string;
+  dose: string;
+  frequency: string;
+  route: string;
+  maxDose?: string;
+  warnings?: string[];
+  references?: string[];
+}
+
+export interface PWAState {
+  isInstallable: boolean;
+  isInstalled: boolean;
+  isOnline: boolean;
+  updateAvailable: boolean;
+}
+
+export interface MedicalData {
+  id: string;
+  type: 'protocol' | 'medication' | 'reference';
+  data: any;
+  lastAccessed: Date;
 }
