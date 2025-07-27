@@ -25,7 +25,7 @@ interface ChatSidebarProps {
   settings: UserSettings;
   isOpen: boolean;
   onClose: () => void;
-  onNewChat: () => void;
+  onNewChat: (initialMessage?: string) => void;
   onSelectChat: (chatId: string) => void;
   onDeleteChat: (chatId: string) => void;
   onClearAllChats: () => void;
@@ -134,8 +134,7 @@ export function ChatSidebar({
                         size="sm"
                         className="w-full justify-start text-left h-auto p-3"
                         onClick={() => {
-                          onNewChat();
-                          // You could emit the template prompt here
+                          onNewChat(template.prompt);
                         }}
                       >
                         <div className="flex items-start gap-3">
@@ -275,6 +274,35 @@ export function ChatSidebar({
                 <Separator />
 
                 <div>
+                  <h3 className="text-sm font-medium mb-4">Chat Preferences</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium">Compact Mode</div>
+                        <div className="text-xs text-muted-foreground">Reduce spacing for more content</div>
+                      </div>
+                      <Switch
+                        checked={settings.compactMode || false}
+                        onCheckedChange={(checked) => onUpdateSettings({ compactMode: checked })}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium">Show Message Count</div>
+                        <div className="text-xs text-muted-foreground">Display message numbers in chat</div>
+                      </div>
+                      <Switch
+                        checked={settings.showMessageCount || false}
+                        onCheckedChange={(checked) => onUpdateSettings({ showMessageCount: checked })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div>
                   <h3 className="text-sm font-medium mb-4">Font Size</h3>
                   <div className="space-y-2">
                     {['small', 'medium', 'large'].map((size) => (
@@ -290,44 +318,110 @@ export function ChatSidebar({
                     ))}
                   </div>
                 </div>
+
+                <Separator />
+
+                <div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-muted-foreground hover:text-destructive"
+                    onClick={() => {
+                      const defaultSettings = {
+                        showTimestamps: true,
+                        showCitations: true,
+                        autoScroll: true,
+                        soundEnabled: false,
+                        fontSize: 'medium' as const,
+                        compactMode: false,
+                        showMessageCount: false
+                      };
+                      onUpdateSettings(defaultSettings);
+                    }}
+                  >
+                    <Settings size={14} className="mr-2" />
+                    Reset to Defaults
+                  </Button>
+                </div>
               </div>
             )}
 
             {activeTab === 'about' && (
               <div className="p-4 space-y-4">
-                <div>
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-3 bg-primary/10 rounded-full flex items-center justify-center">
+                    <Stethoscope size={32} className="text-primary" />
+                  </div>
                   <h3 className="text-lg font-semibold mb-2">NelsonGPT</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Evidence-based pediatric medical assistant powered by the Nelson Textbook of Pediatrics
+                    Your trusted pediatric assistant powered by evidence-based medicine
                   </p>
+                </div>
                   
-                  <div className="space-y-3">
-                    <div>
-                      <h4 className="text-sm font-medium">Features</h4>
-                      <ul className="text-xs text-muted-foreground space-y-1 mt-1">
-                        <li>• Symptom-to-diagnosis mapping</li>
-                        <li>• Pediatric drug dosing calculations</li>
-                        <li>• Emergency protocols and resuscitation</li>
-                        <li>• Growth and development milestones</li>
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h4 className="text-sm font-medium">Technology</h4>
-                      <ul className="text-xs text-muted-foreground space-y-1 mt-1">
-                        <li>• LangChain + LangGraph RAG</li>
-                        <li>• Mistral AI Language Model</li>
-                        <li>• Supabase Vector Database</li>
-                        <li>• PWA-Ready Progressive Web App</li>
-                      </ul>
-                    </div>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <BookOpen size={14} className="text-primary" />
+                      Core Features
+                    </h4>
+                    <ul className="text-xs text-muted-foreground space-y-1 ml-5">
+                      <li>• Symptom analysis and differential diagnosis</li>
+                      <li>• Pediatric drug dosing calculations</li>
+                      <li>• Emergency protocols and procedures</li>
+                      <li>• Growth and development assessments</li>
+                      <li>• Medical reference and guidelines</li>
+                    </ul>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <Settings size={14} className="text-primary" />
+                      Technology Stack
+                    </h4>
+                    <ul className="text-xs text-muted-foreground space-y-1 ml-5">
+                      <li>• React + TypeScript Frontend</li>
+                      <li>• AI-Powered Medical Reasoning</li>
+                      <li>• Progressive Web App (PWA)</li>
+                      <li>• Responsive Design</li>
+                    </ul>
+                  </div>
 
-                    <div className="pt-4 border-t border-border">
-                      <p className="text-xs text-muted-foreground">
-                        <strong>Disclaimer:</strong> This tool is for educational and reference purposes only. 
-                        Always consult with qualified healthcare professionals for medical decisions.
-                      </p>
+                  <Separator />
+
+                  <div>
+                    <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <AlertTriangle size={14} className="text-amber-500" />
+                      Quick Tips
+                    </h4>
+                    <ul className="text-xs text-muted-foreground space-y-1 ml-5">
+                      <li>• Use templates for common queries</li>
+                      <li>• Be specific with symptoms and context</li>
+                      <li>• Check settings for customization</li>
+                      <li>• Clear chat history when needed</li>
+                    </ul>
+                  </div>
+
+                  <div className="pt-4 border-t border-border bg-amber-50/50 dark:bg-amber-950/20 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle size={14} className="text-amber-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-1">
+                          Medical Disclaimer
+                        </p>
+                        <p className="text-xs text-amber-600 dark:text-amber-400">
+                          This tool is for educational and reference purposes only. 
+                          Always consult qualified healthcare professionals for medical decisions.
+                        </p>
+                      </div>
                     </div>
+                  </div>
+
+                  <div className="text-center pt-2">
+                    <p className="text-xs text-muted-foreground">
+                      Version 1.0 • Built with ❤️ for pediatric care
+                    </p>
                   </div>
                 </div>
               </div>
