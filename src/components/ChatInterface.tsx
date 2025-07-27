@@ -1,13 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Message, Chat, UserSettings, MedicalContext } from '../types';
+import { Message, Chat, UserSettings, MedicalContext, PatientInfo } from '../types';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { ChatSidebar } from './ChatSidebar';
+import { MedicalContextPanel } from './MedicalContextPanel';
+import { EmergencyMode } from './EmergencyMode';
+import { SettingsPage } from './SettingsPage';
+import { PWAInstallPrompt } from './PWAInstallPrompt';
 import { Button } from './ui/button';
-import { Menu, Stethoscope, Loader2 } from 'lucide-react';
+import { Badge } from './ui/badge';
+import { Menu, Stethoscope, Loader2, User, AlertTriangle, Settings, Wifi, WifiOff, Download } from 'lucide-react';
 import { generateMedicalResponse, calculatePediatricDosage } from '../lib/rag';
 import { MistralMessage } from '../lib/mistral';
+import { usePWA } from '../hooks/usePWA';
 
 interface ChatInterfaceProps {
   initialSettings?: Partial<UserSettings>;
@@ -29,8 +35,18 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [medicalContext, setMedicalContext] = useState<MedicalContext>({});
+  const [showMedicalPanel, setShowMedicalPanel] = useState(false);
+  const [showEmergencyMode, setShowEmergencyMode] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showPWAPrompt, setShowPWAPrompt] = useState(false);
+  const [patientInfo, setPatientInfo] = useState<PatientInfo>({
+    allergies: [],
+    medications: [],
+    conditions: []
+  });
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { isOnline, isInstallable, isInstalled } = usePWA();
 
   // Get current chat
   const currentChat = chats.find(chat => chat.id === currentChatId);
@@ -42,6 +58,27 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, settings.autoScroll]);
+
+  // Check URL parameters for special modes
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('mode') === 'emergency') {
+      setShowEmergencyMode(true);
+    }
+    if (urlParams.get('tool') === 'calculator') {
+      // Future: Open calculator tool
+    }
+  }, []);
+
+  // Show PWA install prompt after delay
+  useEffect(() => {
+    if (isInstallable && !isInstalled) {
+      const timer = setTimeout(() => {
+        setShowPWAPrompt(true);
+      }, 10000); // Show after 10 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [isInstallable, isInstalled]);
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -343,45 +380,90 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border bg-card">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden"
-            >
-              <Menu size={20} />
-            </Button>
-            
+        {/* Enhanced Header */}
+        <div className="border-b bg-card px-4 py-3">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                <Stethoscope size={24} className="text-primary" />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="lg:hidden"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
+              <div className="flex items-center gap-2">
+                <Stethoscope className="h-5 w-5 text-primary" />
+                <h1 className="font-semibold">
+                  {hasCurrentChat ? currentChat.title : 'Nelson-GPT'}
+                </h1>
               </div>
-              <div>
-                <h2 className="font-semibold text-lg">
-                  {hasCurrentChat ? currentChat.title : 'NelsonGPT'}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Pediatric Assistant
-                </p>
-              </div>
+            </div>
+            
+            {/* Status Indicators & Actions */}
+            <div className="flex items-center gap-2">
+              {/* Online/Offline Status */}
+              <Badge variant={isOnline ? "default" : "secondary"} className="flex items-center gap-1">
+                {isOnline ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+                {isOnline ? 'Online' : 'Offline'}
+              </Badge>
+              
+              {/* PWA Install Button */}
+              {isInstallable && !isInstalled && (
+                <Button size="sm" variant="outline" onClick={() => setShowPWAPrompt(true)}>
+                  <Download className="h-3 w-3 mr-1" />
+                  Install
+                </Button>
+              )}
+              
+              {/* Medical Context Panel Toggle */}
+              <Button 
+                size="sm" 
+                variant={showMedicalPanel ? "default" : "outline"}
+                onClick={() => setShowMedicalPanel(!showMedicalPanel)}
+              >
+                <User className="h-3 w-3 mr-1" />
+                Patient
+              </Button>
+              
+              {/* Emergency Mode */}
+              <Button 
+                size="sm" 
+                variant="destructive"
+                onClick={() => setShowEmergencyMode(true)}
+              >
+                <AlertTriangle className="h-3 w-3 mr-1" />
+                Emergency
+              </Button>
+              
+              {/* Settings */}
+              <Button 
+                size="sm" 
+                variant="ghost"
+                onClick={() => setShowSettings(true)}
+              >
+                <Settings className="h-3 w-3" />
+              </Button>
             </div>
           </div>
-
-          {hasCurrentChat && currentChat.metadata?.urgency && currentChat.metadata.urgency !== 'low' && (
-            <div className={`px-2 py-1 rounded text-xs font-medium ${
-              currentChat.metadata.urgency === 'emergency' 
-                ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                : currentChat.metadata.urgency === 'high'
-                ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
-                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-            }`}>
-              {currentChat.metadata.urgency.toUpperCase()}
-            </div>
-          )}
+          
+          {/* Subtitle */}
+          <div className="text-sm text-muted-foreground mt-1">
+            Evidence-based pediatric medical assistant powered by Nelson Textbook
+          </div>
         </div>
+
+        {/* Medical Context Panel */}
+        {showMedicalPanel && (
+          <div className="border-b bg-muted/30 p-4">
+            <MedicalContextPanel 
+              patientInfo={patientInfo}
+              onPatientInfoChange={setPatientInfo}
+              onClose={() => setShowMedicalPanel(false)}
+              compact={true}
+            />
+          </div>
+        )}
 
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto">
@@ -425,6 +507,36 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
           />
         )}
       </div>
+
+      {/* Modal Components */}
+      {showEmergencyMode && (
+        <EmergencyMode 
+          onClose={() => setShowEmergencyMode(false)}
+          onProtocolSelect={(protocol) => {
+            // Add protocol to chat context
+            setMedicalContext(prev => ({
+              ...prev,
+              emergencyProtocol: protocol
+            }));
+            setShowEmergencyMode(false);
+          }}
+        />
+      )}
+
+      {showSettings && (
+        <SettingsPage
+          settings={settings}
+          onSettingsChange={setSettings}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
+
+      {showPWAPrompt && (
+        <PWAInstallPrompt 
+          onDismiss={() => setShowPWAPrompt(false)}
+          compact={false}
+        />
+      )}
     </div>
   );
 }

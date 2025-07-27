@@ -28,35 +28,64 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'NelsonGPT',
+        name: 'NelsonGPT - Medical Assistant',
         short_name: 'NelsonGPT',
         description: 'Evidence-based pediatric medical assistant powered by the Nelson Textbook of Pediatrics',
         theme_color: '#1e1e1e',
         background_color: '#121212',
         display: 'standalone',
+        orientation: 'portrait-primary',
+        scope: '/',
+        start_url: '/',
+        categories: ['medical', 'healthcare', 'education'],
+        lang: 'en',
         icons: [
           {
             src: 'icon-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'maskable any'
           },
           {
             src: 'icon-512x512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'maskable any'
+          }
+        ],
+        shortcuts: [
+          {
+            name: 'New Medical Consultation',
+            short_name: 'New Chat',
+            url: '/',
+            icons: [{ src: 'icon-192x192.png', sizes: '192x192' }]
+          },
+          {
+            name: 'Emergency Protocols',
+            short_name: 'Emergency',
+            url: '/?mode=emergency',
+            icons: [{ src: 'icon-192x192.png', sizes: '192x192' }]
+          },
+          {
+            name: 'Drug Calculator',
+            short_name: 'Calculator',
+            url: '/?tool=calculator',
+            icons: [{ src: 'icon-192x192.png', sizes: '192x192' }]
           }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        maximumFileSizeToCacheInBytes: 5000000, // 5MB
         runtimeCaching: [
+          // API Caching
           {
             urlPattern: /^https:\/\/api-inference\.huggingface\.co\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'huggingface-api-cache',
               expiration: {
-                maxEntries: 10,
+                maxEntries: 50,
                 maxAgeSeconds: 60 * 60 * 24 // 1 day
               }
             }
@@ -67,12 +96,54 @@ export default defineConfig({
             options: {
               cacheName: 'mistral-api-cache',
               expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 2 // 2 hours
+              }
+            }
+          },
+          // Medical Data Caching
+          {
+            urlPattern: /^https:\/\/.*\.(json|xml)$/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'medical-data-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 1 week
+              }
+            }
+          },
+          // Font Caching
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 // 1 hour
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              }
+            }
+          },
+          // Image Caching
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
               }
             }
           }
-        ]
+        ],
+        // Skip waiting and claim clients immediately
+        skipWaiting: true,
+        clientsClaim: true
+      },
+      devOptions: {
+        enabled: true
       }
     })
   ],

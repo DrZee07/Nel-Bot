@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./styles/mobile.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -231,5 +232,15 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Custom animations for splash screen */
+@keyframes textPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
   }
 }
