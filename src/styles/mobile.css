@@ -1,7 +1,60 @@
 /* Mobile-first responsive design for medical professionals */
+/* Optimized for all smartphone sizes and PWA usage */
 
-/* Touch-friendly button sizes */
+/* Base mobile styles for all smartphones */
 @media (max-width: 768px) {
+  /* Prevent zoom on input focus */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
+  /* Smooth scrolling for better UX */
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Full viewport usage */
+  body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Header optimizations for smartphones */
+  .header-mobile {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* Floating action buttons positioning */
+  .floating-actions {
+    position: fixed;
+    bottom: 80px;
+    right: 16px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .floating-button {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+  }
+
+  .floating-button:active {
+    transform: scale(0.95);
+  }
   .touch-target {
     min-height: 44px;
     min-width: 44px;
@@ -346,4 +399,3 @@
     text-align: left;
   }
 }
-

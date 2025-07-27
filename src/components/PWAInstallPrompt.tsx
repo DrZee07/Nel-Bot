@@ -35,19 +35,21 @@ export function PWAInstallPrompt({ onDismiss, compact = false }: PWAInstallPromp
 
   if (compact) {
     return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <Card className="w-80 shadow-lg border-primary/20">
+      <div className="fixed bottom-4 left-4 right-4 z-50">
+        <Card className="shadow-lg border-primary/20 bg-primary/5">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Smartphone className="h-5 w-5 text-primary" />
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <Smartphone className="h-5 w-5 text-primary" />
+                </div>
                 <div>
-                  <p className="text-sm font-medium">Install NelsonGPT</p>
-                  <p className="text-xs text-muted-foreground">Access offline & get updates</p>
+                  <p className="text-sm font-semibold">Add to Home Screen</p>
+                  <p className="text-xs text-muted-foreground">Quick access to Pediatric Assistant</p>
                 </div>
               </div>
-              <div className="flex gap-1">
-                <Button size="sm" onClick={handleInstall} className="h-8">
+              <div className="flex gap-2">
+                <Button size="sm" onClick={handleInstall} className="h-8 px-3">
                   <Download className="h-3 w-3 mr-1" />
                   Install
                 </Button>
@@ -64,14 +66,14 @@ export function PWAInstallPrompt({ onDismiss, compact = false }: PWAInstallPromp
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
-            <Smartphone className="h-8 w-8 text-primary" />
+      <Card className="w-full max-w-sm mx-4">
+        <CardHeader className="text-center pb-4">
+          <div className="mx-auto mb-4 p-4 bg-primary/10 rounded-full w-fit">
+            <Smartphone className="h-10 w-10 text-primary" />
           </div>
-          <CardTitle className="text-xl">Install NelsonGPT</CardTitle>
-          <CardDescription>
-            Get the full medical assistant experience with offline access and instant updates
+          <CardTitle className="text-2xl font-bold">Add to Home Screen</CardTitle>
+          <CardDescription className="text-base">
+            Install Pediatric Assistant for quick access to medical guidance on your smartphone
           </CardDescription>
         </CardHeader>
         
@@ -90,29 +92,35 @@ export function PWAInstallPrompt({ onDismiss, compact = false }: PWAInstallPromp
           </div>
 
           {/* Features */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 text-sm">
-              <Monitor className="h-4 w-4 text-primary flex-shrink-0" />
-              <span>Works offline for critical medical consultations</span>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 rounded-full">
+                <Wifi className="h-4 w-4 text-green-600" />
+              </div>
+              <span className="text-sm font-medium">Works offline during emergencies</span>
             </div>
-            <div className="flex items-center gap-3 text-sm">
-              <Download className="h-4 w-4 text-primary flex-shrink-0" />
-              <span>Instant access from home screen</span>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-full">
+                <Smartphone className="h-4 w-4 text-blue-600" />
+              </div>
+              <span className="text-sm font-medium">One-tap access from home screen</span>
             </div>
-            <div className="flex items-center gap-3 text-sm">
-              <Smartphone className="h-4 w-4 text-primary flex-shrink-0" />
-              <span>Optimized for mobile medical workflows</span>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 rounded-full">
+                <Download className="h-4 w-4 text-purple-600" />
+              </div>
+              <span className="text-sm font-medium">Native app experience</span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-2 pt-4">
-            <Button onClick={handleInstall} className="flex-1">
-              <Download className="h-4 w-4 mr-2" />
-              Install App
+          <div className="flex flex-col gap-3 pt-6">
+            <Button onClick={handleInstall} className="w-full h-12 text-base font-semibold">
+              <Download className="h-5 w-5 mr-2" />
+              Add to Home Screen
             </Button>
-            <Button variant="outline" onClick={handleDismiss}>
-              Maybe Later
+            <Button variant="ghost" onClick={handleDismiss} className="w-full">
+              Not Now
             </Button>
           </div>
 
@@ -130,4 +138,3 @@ export function PWAInstallPrompt({ onDismiss, compact = false }: PWAInstallPromp
     </div>
   );
 }
-

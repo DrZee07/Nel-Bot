@@ -28,17 +28,18 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'NelsonGPT - Medical Assistant',
-        short_name: 'NelsonGPT',
-        description: 'Evidence-based pediatric medical assistant powered by the Nelson Textbook of Pediatrics',
-        theme_color: '#1e1e1e',
-        background_color: '#121212',
+        name: 'Pediatric Assistant - Mobile Medical Guide',
+        short_name: 'Pediatric Assistant',
+        description: 'Mobile pediatric medical assistant for healthcare professionals. Get clinical guidance, dosage calculations, and emergency protocols on your smartphone.',
+        theme_color: '#0ea5e9',
+        background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait-primary',
         scope: '/',
         start_url: '/',
-        categories: ['medical', 'healthcare', 'education'],
+        categories: ['medical', 'healthcare', 'education', 'productivity'],
         lang: 'en',
+        prefer_related_applications: false,
         icons: [
           {
             src: 'icon-192x192.png',
@@ -55,8 +56,8 @@ export default defineConfig({
         ],
         shortcuts: [
           {
-            name: 'New Medical Consultation',
-            short_name: 'New Chat',
+            name: 'Quick Consultation',
+            short_name: 'Consult',
             url: '/',
             icons: [{ src: 'icon-192x192.png', sizes: '192x192' }]
           },
@@ -67,9 +68,15 @@ export default defineConfig({
             icons: [{ src: 'icon-192x192.png', sizes: '192x192' }]
           },
           {
-            name: 'Drug Calculator',
-            short_name: 'Calculator',
+            name: 'Dosage Calculator',
+            short_name: 'Dosage',
             url: '/?tool=calculator',
+            icons: [{ src: 'icon-192x192.png', sizes: '192x192' }]
+          },
+          {
+            name: 'Patient Info',
+            short_name: 'Patient',
+            url: '/?panel=patient',
             icons: [{ src: 'icon-192x192.png', sizes: '192x192' }]
           }
         ]

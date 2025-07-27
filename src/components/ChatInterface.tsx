@@ -362,95 +362,36 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
 
   return (
     <div className="flex h-screen bg-background text-foreground">
-      {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'block' : 'hidden'} lg:block lg:w-80 flex-shrink-0`}>
-        <ChatSidebar
-          chats={chats}
-          currentChatId={currentChatId}
-          settings={settings}
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-          onNewChat={createNewChat}
-          onSelectChat={selectChat}
-          onDeleteChat={deleteChat}
-          onClearAllChats={clearAllChats}
-          onUpdateSettings={updateSettings}
-        />
-      </div>
-
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Enhanced Header */}
-        <div className="border-b bg-card px-4 py-3">
-          <div className="flex items-center justify-between">
+      {/* Main Chat Area - Full Screen for Smartphone */}
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {/* Clean Header - Smartphone Optimized */}
+        <div className="border-b bg-card px-4 py-4 shadow-sm">
+          <div className="flex items-center justify-center">
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden"
-              >
-                <Menu className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center gap-2">
-                <Stethoscope className="h-5 w-5 text-primary" />
-                <h1 className="font-semibold">
-                  {hasCurrentChat ? currentChat.title : 'Nelson-GPT'}
-                </h1>
-              </div>
-            </div>
-            
-            {/* Status Indicators & Actions */}
-            <div className="flex items-center gap-2">
-              {/* Online/Offline Status */}
-              <Badge variant={isOnline ? "default" : "secondary"} className="flex items-center gap-1">
-                {isOnline ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-                {isOnline ? 'Online' : 'Offline'}
-              </Badge>
-              
-              {/* PWA Install Button */}
-              {isInstallable && !isInstalled && (
-                <Button size="sm" variant="outline" onClick={() => setShowPWAPrompt(true)}>
-                  <Download className="h-3 w-3 mr-1" />
-                  Install
-                </Button>
-              )}
-              
-              {/* Medical Context Panel Toggle */}
-              <Button 
-                size="sm" 
-                variant={showMedicalPanel ? "default" : "outline"}
-                onClick={() => setShowMedicalPanel(!showMedicalPanel)}
-              >
-                <User className="h-3 w-3 mr-1" />
-                Patient
-              </Button>
-              
-              {/* Emergency Mode */}
-              <Button 
-                size="sm" 
-                variant="destructive"
-                onClick={() => setShowEmergencyMode(true)}
-              >
-                <AlertTriangle className="h-3 w-3 mr-1" />
-                Emergency
-              </Button>
-              
-              {/* Settings */}
-              <Button 
-                size="sm" 
-                variant="ghost"
-                onClick={() => setShowSettings(true)}
-              >
-                <Settings className="h-3 w-3" />
-              </Button>
+              <Stethoscope className="h-6 w-6 text-primary" />
+              <h1 className="text-xl font-semibold text-center">
+                Pediatric Assistant
+              </h1>
             </div>
           </div>
           
-          {/* Subtitle */}
-          <div className="text-sm text-muted-foreground mt-1">
-            Evidence-based pediatric medical assistant powered by Nelson Textbook
-          </div>
+          {/* PWA Install Prompt - Smartphone Focused */}
+          {isInstallable && !isInstalled && (
+            <div className="mt-3 p-3 bg-primary/10 rounded-lg border border-primary/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Download className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">Install on Home Screen</span>
+                </div>
+                <Button size="sm" onClick={() => setShowPWAPrompt(true)} className="ml-2">
+                  Install
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Get quick access from your home screen
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Medical Context Panel */}
@@ -473,10 +414,9 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 shadow-lg">
                 <Stethoscope size={40} className="text-primary" />
               </div>
-              <h1 className="text-2xl font-bold mb-2">Welcome to NelsonGPT</h1>
-              <p className="text-muted-foreground mb-8 max-w-md">
-                Your pediatric assistant powered by the Nelson Textbook of Pediatrics. 
-                Start a conversation to get clinical guidance, dosage calculations, and medical references.
+              <h1 className="text-2xl font-bold mb-2">Pediatric Assistant</h1>
+              <p className="text-muted-foreground mb-8 max-w-md text-center">
+                Your mobile pediatric medical assistant. Get clinical guidance, dosage calculations, and emergency protocols on the go.
               </p>
               <Button onClick={createNewChat} size="lg">
                 Start New Chat
@@ -506,6 +446,39 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
             placeholder="Ask about pediatric medicine, drug dosages, symptoms..."
           />
         )}
+
+        {/* Floating Action Button - Medical Features */}
+        <div className="fixed bottom-20 right-4 flex flex-col gap-2 z-50">
+          {/* Emergency Button */}
+          <Button 
+            size="sm" 
+            variant="destructive"
+            onClick={() => setShowEmergencyMode(true)}
+            className="rounded-full shadow-lg h-12 w-12 p-0"
+          >
+            <AlertTriangle className="h-5 w-5" />
+          </Button>
+          
+          {/* Patient Info Button */}
+          <Button 
+            size="sm" 
+            variant={showMedicalPanel ? "default" : "outline"}
+            onClick={() => setShowMedicalPanel(!showMedicalPanel)}
+            className="rounded-full shadow-lg h-12 w-12 p-0"
+          >
+            <User className="h-5 w-5" />
+          </Button>
+          
+          {/* Settings Button */}
+          <Button 
+            size="sm" 
+            variant="ghost"
+            onClick={() => setShowSettings(true)}
+            className="rounded-full shadow-lg h-12 w-12 p-0 bg-card border"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
 
       {/* Modal Components */}
