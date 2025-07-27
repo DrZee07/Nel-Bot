@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from './ui/button';
-import { Textarea } from './ui/textarea';
 import { Send, Mic, MicOff, Loader2 } from 'lucide-react';
+import { cn } from '../lib/utils';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -13,7 +13,7 @@ interface ChatInputProps {
 export function ChatInput({ 
   onSendMessage, 
   isLoading = false,
-  placeholder = "Ask about pediatric medicine...",
+  placeholder = "Message NelsonGPT...",
   maxLength = 1000
 }: ChatInputProps) {
   const [message, setMessage] = useState('');
@@ -80,41 +80,30 @@ export function ChatInput({
     recognition.start();
   };
 
-  // Medical quick actions
-  const quickActions = [
-    'Calculate drug dosage',
-    'Emergency protocol',
-    'Growth chart assessment',
-    'Vaccine schedule'
-  ];
-
-  const insertQuickAction = (action: string) => {
-    setMessage(action + ': ');
-    textareaRef.current?.focus();
-  };
-
   return (
-    <div className="border-t border-border bg-background p-4">
-      {/* Quick Actions */}
-      <div className="flex flex-wrap gap-2 mb-3 overflow-x-auto">
-        {quickActions.map((action) => (
+    <div className="p-4 bg-background">
+      {/* ChatGPT-style Input Container */}
+      <form onSubmit={handleSubmit} className="relative max-w-4xl mx-auto">
+        <div className="relative flex items-end bg-input/50 border border-border/50 rounded-3xl shadow-sm hover:shadow-md transition-all duration-200 focus-within:border-ring/50 focus-within:shadow-md">
+          {/* Voice Input Button */}
           <Button
-            key={action}
-            variant="outline"
-            size="sm"
-            className="text-xs whitespace-nowrap"
-            onClick={() => insertQuickAction(action)}
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={toggleVoiceInput}
             disabled={isLoading}
+            className={cn(
+              "ml-3 my-2 h-8 w-8 rounded-full shrink-0 transition-colors",
+              isListening 
+                ? "bg-red-500 text-white hover:bg-red-600" 
+                : "hover:bg-accent text-muted-foreground hover:text-foreground"
+            )}
           >
-            {action}
+            {isListening ? <MicOff size={16} /> : <Mic size={16} />}
           </Button>
-        ))}
-      </div>
 
-      {/* Input Form */}
-      <form onSubmit={handleSubmit} className="flex items-end gap-2">
-        <div className="flex-1 relative">
-          <Textarea
+          {/* Textarea */}
+          <textarea
             ref={textareaRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -122,41 +111,44 @@ export function ChatInput({
             placeholder={placeholder}
             disabled={isLoading}
             maxLength={maxLength}
-            className="min-h-[44px] max-h-[120px] resize-none pr-12 bg-input border-border text-foreground placeholder:text-muted-foreground"
             rows={1}
+            className={cn(
+              "flex-1 min-h-[44px] max-h-[120px] resize-none bg-transparent border-0 outline-none",
+              "px-3 py-3 text-foreground placeholder:text-muted-foreground",
+              "text-base leading-6 overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+            )}
+            style={{ 
+              fieldSizing: 'content',
+              scrollbarWidth: 'thin'
+            }}
           />
-          
-          {/* Character count */}
-          <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">
-            {message.length}/{maxLength}
-          </div>
+
+          {/* Send Button */}
+          <Button
+            type="submit"
+            size="icon"
+            disabled={!message.trim() || isLoading}
+            className={cn(
+              "mr-3 my-2 h-8 w-8 rounded-full shrink-0 transition-all duration-200",
+              !message.trim() || isLoading
+                ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md"
+            )}
+          >
+            {isLoading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Send size={16} />
+            )}
+          </Button>
         </div>
 
-        {/* Voice Input Button */}
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          onClick={toggleVoiceInput}
-          disabled={isLoading}
-          className={`h-11 w-11 ${isListening ? 'bg-red-500 text-white' : ''}`}
-        >
-          {isListening ? <MicOff size={18} /> : <Mic size={18} />}
-        </Button>
-
-        {/* Send Button */}
-        <Button
-          type="submit"
-          size="icon"
-          disabled={!message.trim() || isLoading}
-          className="h-11 w-11 bg-primary text-primary-foreground hover:bg-primary/90"
-        >
-          {isLoading ? (
-            <Loader2 size={18} className="animate-spin" />
-          ) : (
-            <Send size={18} />
-          )}
-        </Button>
+        {/* Character count - only show when approaching limit */}
+        {message.length > maxLength * 0.8 && (
+          <div className="absolute -bottom-6 right-0 text-xs text-muted-foreground">
+            {message.length}/{maxLength}
+          </div>
+        )}
       </form>
     </div>
   );
