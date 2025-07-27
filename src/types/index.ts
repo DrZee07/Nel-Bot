@@ -87,6 +87,8 @@ export interface UserSettings {
   theme: 'dark' | 'light';
   autoScroll: boolean;
   soundEnabled: boolean;
+  compactMode?: boolean;
+  showMessageCount?: boolean;
 }
 
 export interface AppState {

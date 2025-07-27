@@ -81,7 +81,7 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
   // Don't persist current chat ID - always start fresh
 
   // Create new chat
-  const createNewChat = () => {
+  const createNewChat = (initialMessage?: string) => {
     const newChatId = uuidv4();
     const newChat: Chat = {
       id: newChatId,
@@ -98,6 +98,13 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
     setChats(prev => [newChat, ...prev]);
     setCurrentChatId(newChatId);
     setSidebarOpen(false);
+
+    // If initial message provided, send it automatically
+    if (initialMessage) {
+      setTimeout(() => {
+        sendMessage(initialMessage);
+      }, 100); // Small delay to ensure chat is set up
+    }
   };
 
   // Select chat
