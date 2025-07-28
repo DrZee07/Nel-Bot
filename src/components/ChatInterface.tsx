@@ -395,7 +395,7 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
               <div className="flex items-center gap-2">
                 <Stethoscope className="h-5 w-5 text-primary" />
                 <h1 className="font-semibold">
-                  {hasCurrentChat ? currentChat.title : 'Nelson-GPT'}
+                  Pediatric Assistant
                 </h1>
               </div>
             </div>
@@ -447,10 +447,7 @@ export function ChatInterface({ initialSettings = {} }: ChatInterfaceProps) {
             </div>
           </div>
           
-          {/* Subtitle */}
-          <div className="text-sm text-muted-foreground mt-1">
-            Evidence-based pediatric medical assistant powered by Nelson Textbook
-          </div>
+
         </div>
 
         {/* Medical Context Panel */}
