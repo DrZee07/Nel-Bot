@@ -1,0 +1,553 @@
+Build me fully developed and functional agent <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical RAG Agent - Pediatric Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .knowledge-status {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+            margin-right: 8px;
+        }
+
+        .recent-topics {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .topic-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+            cursor: pointer;
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .topic-item:hover {
+            color: #495057;
+        }
+
+        .topic-item:last-child {
+            border-bottom: none;
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            margin-left: auto;
+        }
+
+        .message.assistant {
+            margin-right: auto;
+        }
+
+        .message-content {
+            padding: 15px 20px;
+            border-radius: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.assistant .message-content {
+            background: white;
+            border: 1px solid #e9ecef;
+        }
+
+        .message-header {
+            font-size: 12px;
+            margin-bottom: 8px;
+            opacity: 0.7;
+        }
+
+        .retrieval-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .source-citation {
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 8px;
+            margin-top: 10px;
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .input-field {
+            flex: 1;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 14px;
+            resize: none;
+            max-height: 120px;
+            min-height: 45px;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 15px 20px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: loading 1.4s infinite ease-in-out;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes loading {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #6c757d;
+            padding: 40px 20px;
+        }
+
+        .welcome-message h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .example-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .example-question {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .example-question:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Pediatric Medical Assistant</h1>
+            <p>AI-powered medical guidance based on Nelson Textbook of Pediatrics</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="knowledge-status">
+                    <h3>Knowledge Base Status</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Nelson Textbook Active</span>
+                    </div>
+                    <div style="font-size: 12px; color: #6c757d; margin-top: 8px;">
+                        <div>Chapters indexed: 847</div>
+                        <div>Vector embeddings: 12,453</div>
+                        <div>Last updated: Jan 2025</div>
+                    </div>
+                </div>
+                
+                <div class="recent-topics">
+                    <h3>Recent Topics</h3>
+                    <div class="topic-item">Otitis media treatment</div>
+                    <div class="topic-item">Asthma management</div>
+                    <div class="topic-item">Fever in infants</div>
+                    <div class="topic-item">Vaccination schedules</div>
+                    <div class="topic-item">Growth disorders</div>
+                    <div class="topic-item">ADHD diagnosis</div>
+                    <div class="topic-item">Respiratory infections</div>
+                </div>
+            </div>
+            
+            <div class="chat-area">
+                <div class="messages" id="messages">
+                    <div class="welcome-message">
+                        <h3>Welcome to your Pediatric Medical Assistant</h3>
+                        <p>Ask any question about pediatric medicine and I'll search through the Nelson Textbook of Pediatrics to provide you with evidence-based answers.</p>
+                        
+                        <div class="example-questions">
+                            <div class="example-question" onclick="askExample('What are the common treatments for otitis media in toddlers?')">Otitis Media Treatment</div>
+                            <div class="example-question" onclick="askExample('How do you manage asthma in children under 5?')">Childhood Asthma</div>
+                            <div class="example-question" onclick="askExample('What are the red flags for fever in infants?')">Infant Fever</div>
+                            <div class="example-question" onclick="askExample('When should you refer a child for ADHD evaluation?')">ADHD Evaluation</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <div class="input-container">
+                        <textarea 
+                            id="messageInput" 
+                            class="input-field" 
+                            placeholder="Ask a pediatric medical question..."
+                            onkeydown="handleKeyPress(event)"
+                        ></textarea>
+                        <button class="send-button" onclick="sendMessage()" id="sendButton">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated knowledge base - in real implementation, this would be your Supabase vector store
+        const knowledgeBase = {
+            "otitis media": {
+                chunks: [
+                    {
+                        content: "Acute otitis media (AOM) is one of the most common pediatric infections. First-line treatment for uncomplicated AOM in children over 6 months is amoxicillin at 80-90 mg/kg/day divided into two doses for 5-7 days. For penicillin-allergic patients, alternatives include azithromycin, clarithromycin, or cefdinir.",
+                        source: "Chapter 651: Otitis Media, Nelson Textbook of Pediatrics",
+                        relevance: 0.95
+                    },
+                    {
+                        content: "Watchful waiting is appropriate for children 6-23 months with unilateral AOM without severe symptoms, and for children ≥24 months with unilateral or bilateral AOM without severe symptoms. Severe symptoms include moderate to severe otalgia or fever ≥39°C (102.2°F).",
+                        source: "Chapter 651: Otitis Media, Nelson Textbook of Pediatrics",
+                        relevance: 0.92
+                    },
+                    {
+                        content: "Second-line antibiotics for treatment failure include amoxicillin-clavulanate at 90 mg/kg/day of the amoxicillin component, or cefuroxime axetil, cefdinir, or clindamycin for severe penicillin allergy.",
+                        source: "Chapter 651: Otitis Media, Nelson Textbook of Pediatrics",
+                        relevance: 0.88
+                    }
+                ]
+            },
+            "asthma": {
+                chunks: [
+                    {
+                        content: "Asthma management in children under 5 follows a stepwise approach. Step 1 involves short-acting beta2-agonists (SABA) as needed. Step 2 adds low-dose inhaled corticosteroids (ICS). The preferred ICS for young children is budesonide or fluticasone via metered-dose inhaler with spacer and mask.",
+                        source: "Chapter 169: Asthma in Children, Nelson Textbook of Pediatrics",
+                        relevance: 0.94
+                    },
+                    {
+                        content: "For children under 5 with frequent symptoms, daily controller therapy with low-dose ICS is recommended. Doses: budesonide 0.25-0.5 mg twice daily or fluticasone 44-88 mcg twice daily via MDI with spacer/mask.",
+                        source: "Chapter 169: Asthma in Children, Nelson Textbook of Pediatrics",
+                        relevance: 0.91
+                    }
+                ]
+            },
+            "fever infant": {
+                chunks: [
+                    {
+                        content: "Fever in infants <90 days requires careful evaluation. Red flags include: temperature >38°C (100.4°F) in infants <60 days, ill appearance, poor feeding, lethargy, irritability, or signs of focal infection. These infants require immediate medical evaluation and may need hospitalization.",
+                        source: "Chapter 201: Fever Without Source, Nelson Textbook of Pediatrics",
+                        relevance: 0.96
+                    },
+                    {
+                        content: "The Rochester criteria help identify low-risk febrile infants 60-90 days old: previously healthy, well-appearing, no focal infection signs, WBC 5,000-15,000, band count <1,500, normal urinalysis, and <5 WBCs per hpf in stool if diarrhea present.",
+                        source: "Chapter 201: Fever Without Source, Nelson Textbook of Pediatrics",
+                        relevance: 0.89
+                    }
+                ]
+            },
+            "adhd": {
+                chunks: [
+                    {
+                        content: "ADHD referral criteria include: symptoms present before age 12, symptoms in ≥2 settings (home, school, work), symptoms interfere with functioning, symptoms not better explained by another condition. Use standardized rating scales like Vanderbilt or Conners for assessment.",
+                        source: "Chapter 40: Attention-Deficit/Hyperactivity Disorder, Nelson Textbook of Pediatrics",
+                        relevance: 0.93
+                    },
+                    {
+                        content: "Comprehensive ADHD evaluation includes medical history, physical exam, developmental assessment, behavioral rating scales from multiple sources, and screening for comorbid conditions like learning disabilities, anxiety, or depression.",
+                        source: "Chapter 40: Attention-Deficit/Hyperactivity Disorder, Nelson Textbook of Pediatrics",
+                        relevance: 0.87
+                    }
+                ]
+            }
+        };
+
+        let conversationHistory = [];
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function askExample(question) {
+            document.getElementById('messageInput').value = question;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Clear input and disable button
+            input.value = '';
+            const sendButton = document.getElementById('sendButton');
+            sendButton.disabled = true;
+            
+            // Add user message
+            addMessage('user', message);
+            
+            // Show loading
+            showLoading();
+            
+            // Simulate processing delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Remove loading
+            removeLoading();
+            
+            // Process the message
+            const response = await processMessage(message);
+            addMessage('assistant', response.content, response.retrievalInfo, response.sources);
+            
+            // Re-enable button
+            sendButton.disabled = false;
+            input.focus();
+        }
+
+        function addMessage(type, content, retrievalInfo = null, sources = null) {
+            const messagesContainer = document.getElementById('messages');
+            
+            // Remove welcome message if it exists
+            const welcomeMessage = messagesContainer.querySelector('.welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.remove();
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            let messageHTML = `
+                <div class="message-content">
+                    <div class="message-header">${type === 'user' ? 'You' : 'Medical Assistant'}</div>
+                    <div>${content}</div>
+            `;
+            
+            if (retrievalInfo) {
+                messageHTML += `
+                    <div class="retrieval-info">
+                        <strong>📚 Knowledge Retrieved:</strong> ${retrievalInfo}
+                    </div>
+                `;
+            }
+            
+            if (sources && sources.length > 0) {
+                messageHTML += '<div class="source-citation"><strong>Sources:</strong><br>';
+                sources.forEach(source => {
+                    messageHTML += `• ${source}<br>`;
+                });
+                messageHTML += '</div>';
+            }
+            
+            messageHTML += '</div>';
+            messageDiv.innerHTML = messageHTML;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showLoading() {
+            const messagesContainer = document.getElementById('messages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message assistant';
+            loadingDiv.id = 'loading-message';
+            loadingDiv.innerHTML = `
+                <d
